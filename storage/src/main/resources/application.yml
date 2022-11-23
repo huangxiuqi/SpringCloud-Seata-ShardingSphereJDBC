@@ -1,0 +1,41 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: storage-service
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/seata_storage?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+seata:
+  application-id: ${spring.application.name}
+  tx-service-group: ${spring.application.name}_tx_group
+  use-jdk-proxy: true
+  config:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      data-id: seataServer.properties
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      cluster: default
+logging:
+  level:
+    org:
+      reflections:
+        Reflections: warn
+    com:
+      alibaba:
+        nacos:
+          common:
+            remote:
+              client: warn

@@ -1,0 +1,88 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: order-service
+#  datasource:
+#    url: jdbc:mysql://127.0.0.1:3306/seata_order
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: root
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+  shardingsphere:
+    mode:
+      type: Standalone
+    props:
+      sql‑show: true
+    datasource:
+      names: ds0, ds1
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://127.0.0.1:3306/seata_order0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+      ds1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        jdbcUrl: jdbc:mysql://127.0.0.1:3306/seata_order1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: root
+    rules:
+      sharding:
+        tables:
+          order_tbl:
+            actual-data-nodes: ds$->{0..1}.order_tbl$->{0..1}
+            database-strategy:
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: seata_order_database_inline
+            table-strategy:
+              standard:
+                sharding-column: id
+                sharding-algorithm-name: seata_order_table_inline
+            key-generate-strategy:
+              column: id
+              key-generator-name: snowflake
+        sharding-algorithms:
+          seata_order_database_inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds${user_id % 2}
+          seata_order_table_inline:
+            type: INLINE
+            props:
+              algorithm-expression: order_tbl${id % 2}
+        key-generators:
+          snowflake:
+            type: SNOWFLAKE
+seata:
+  application-id: ${spring.application.name}
+  tx-service-group: ${spring.application.name}_tx_group
+  use-jdk-proxy: true
+  config:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      data-id: seataServer.properties
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      cluster: default
+logging:
+  level:
+    org:
+      reflections:
+        Reflections: warn
+    com:
+      alibaba:
+        nacos:
+          common:
+            remote:
+              client: warn
