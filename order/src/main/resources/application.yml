@@ -62,6 +62,7 @@ seata:
   application-id: ${spring.application.name}
   tx-service-group: ${spring.application.name}_tx_group
   use-jdk-proxy: true
+  enable-auto-data-source-proxy: false
   config:
     type: nacos
     nacos:

@@ -9,14 +9,13 @@ import org.apache.shardingsphere.transaction.annotation.ShardingSphereTransactio
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author huangxiuqi
  */
-@Service
+//@Service
 @RestController
 public class OrderServiceImpl implements OrderService {
 
